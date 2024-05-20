@@ -1,9 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_app/features/home/domain/entities/photo.dart';
-import 'package:flutter_gallery_app/features/home/presentation/blocs/photo_bloc.dart';
-import 'package:flutter_gallery_app/features/home/presentation/blocs/photo_events.dart';
-import 'package:flutter_gallery_app/features/home/presentation/blocs/photo_states.dart';
+import 'package:flutter_gallery_app/features/home/presentation/controllers/photo_controller.dart';
+import 'package:flutter_gallery_app/injection_container.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class PhotoView extends StatefulWidget {
@@ -14,46 +14,76 @@ class PhotoView extends StatefulWidget {
 }
 
 class _PhotoViewState extends State<PhotoView> {
-  final PagingController<int, Photo> _pagingController =
-      PagingController(firstPageKey: 1);
+  final PhotoController _photoController = locator<PhotoController>();
 
   @override
-  void initState() {
-    super.initState();
-    _pagingController.addPageRequestListener((pageKey) {
-      context.read<PhotoBloc>().add(GetPhotosEvent(page: pageKey, perPage: 10));
-    });
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () => Future.sync(
+        () => _photoController.pagingController.refresh(),
+      ),
+      child: PagedMasonryGridView<int, Photo>(
+        pagingController: _photoController.pagingController,
+        builderDelegate: PagedChildBuilderDelegate<Photo>(
+          itemBuilder: (context, item, index) => GridTile(
+            child: CachedNetworkImage(
+                imageUrl: item.thumbUrl,
+                errorWidget: (context, url, error) => Container()),
+          ),
+          firstPageErrorIndicatorBuilder: (context) => ErrorIndicator(
+            onTryAgain: () =>
+                _photoController.pagingController.retryLastFailedRequest(),
+          ),
+          newPageProgressIndicatorBuilder: (_) => Container(),
+          newPageErrorIndicatorBuilder: (context) => ErrorIndicator(
+            displayMessage: false,
+            onTryAgain: () =>
+                _photoController.pagingController.retryLastFailedRequest(),
+          ),
+        ),
+        gridDelegateBuilder: (int childCount) {
+          return const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+          );
+        },
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _pagingController.dispose();
-    context.read<PhotoBloc>().close();
+    _photoController.dispose();
     super.dispose();
   }
+}
+
+class ErrorIndicator extends StatelessWidget {
+  final VoidCallback onTryAgain;
+  final bool displayMessage;
+
+  const ErrorIndicator(
+      {super.key, required this.onTryAgain, this.displayMessage = true});
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<PhotoBloc, PhotoState>(
-      listener: (context, state) {
-        if (state is PhotoLoaded) {
-          _pagingController.appendPage(
-              state.photos, state.hasReachedMax ? null : state.photos.length);
-        } else if (state is PhotoError) {
-          _pagingController.error = true;
-          // Center(child: Text(state.message))
-        }
-      },
-      child: PagedListView<int, Photo>(
-        pagingController: _pagingController,
-        builderDelegate: PagedChildBuilderDelegate<Photo>(
-          itemBuilder: (context, item, index) {
-            return ListTile(
-              leading: Image.network(item.thumbUrl),
-              title: Text('Photo ${item.id}'),
-            );
-          },
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Visibility(
+              visible: displayMessage,
+              child: Text(
+                'Something Went Wrong!',
+                style: Theme.of(context).textTheme.titleMedium,
+              )),
+          const SizedBox(height: 8),
+          FilledButton(
+            onPressed: onTryAgain,
+            child: const Text('Retry'),
+          ),
+        ],
       ),
     );
   }

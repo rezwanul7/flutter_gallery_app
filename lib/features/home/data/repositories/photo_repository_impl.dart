@@ -31,6 +31,8 @@ class PhotoRepositoryImpl implements PhotoRepository {
       return Right(photos);
     } on ServerFailure {
       return Left(ServerFailure());
+    } on Exception {
+      return Left(ServerFailure());
     }
   }
 }
