@@ -19,11 +19,11 @@ appropriate experience whenever they open the app.
 - [x] Integrate with Unsplash API to fetch images based on predefined time segments (morning, afternoon, evening, night)..
 - [ ] Display the appropriate images for the current time segment in a grid layout with infinite scroll.
 - [x] Implement a loading indicator while images are being fetched.
-- [ ] Provide pull to refresh action to manually refresh the images.
+- [x] Provide pull to refresh action to manually refresh the images.
 - [ ] Allow users to tap on a photo to view it in full-screen mode.
 - [ ] Implement a responsive UI that works well on various screen sizes.
-- [ ] Cache images locally to reduce loading time.
+- [x] Cache images locally to reduce loading time.
 - [ ] Cache API responses to reduce network calls.
 - [ ] Implement a flexible app configuration to easily switch between development and production APIs.
-- [ ] unit tests
-- [ ] integration tests
+- [x] Write unit tests
+- [ ] Write integration tests
