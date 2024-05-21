@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gallery_app/features/home/domain/entities/pagination.dart';
+import 'package:flutter_gallery_app/features/home/domain/entities/pagination_filter.dart';
 import 'package:flutter_gallery_app/features/home/domain/usecases/get_photos.dart';
 import 'package:flutter_gallery_app/features/home/presentation/blocs/photo_events.dart';
 import 'package:flutter_gallery_app/features/home/presentation/blocs/photo_states.dart';
@@ -11,7 +12,7 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
     on<GetPhotosEvent>((event, emit) async {
       emit(PhotoLoading());
       final failureOrPhotos =
-          await getPhotos(Pagination(page: event.page, perPage: event.perPage));
+          await getPhotos(PaginationFilter(pagination: Pagination(page: event.page, perPage: event.perPage)));
       failureOrPhotos.fold(
         (failure) => emit(PhotoError(message: 'Failed to load photos')),
         (newPhotos) {

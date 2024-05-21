@@ -12,13 +12,14 @@ class UnsplashRemoteDataSourceImpl implements UnsplashRemoteDataSource {
 
   @override
   Future<List<PhotoModel>> getPhotos(
-      {required int page, required int perPage}) async {
+      {required int page, required int perPage, String? query}) async {
     try {
       final response = await dio.get(
-        '/photos',
+        '/search/photos',
         queryParameters: {
           'page': page,
           'per_page': perPage,
+          'query': query,
         },
         options: Options(
           headers: {
@@ -29,13 +30,13 @@ class UnsplashRemoteDataSourceImpl implements UnsplashRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonResponse = response.data;
+        final List<dynamic> jsonResponse = response.data["results"];
         return jsonResponse.map((json) => PhotoModel.fromJson(json)).toList();
       } else {
         throw ServerFailure();
       }
     } catch (error, stackTrace) {
-      // logger.e(error.toString(), error: error, stackTrace: stackTrace);
+      logger.e(error.toString(), error: error, stackTrace: stackTrace);
       throw ServerFailure();
     }
   }
