@@ -1,7 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_gallery_app/features/home/domain/entities/photo.dart';
 import 'package:flutter_gallery_app/features/home/presentation/controllers/photo_controller.dart';
+import 'package:flutter_gallery_app/features/home/presentation/widgets/photo_details_dialog.dart';
 import 'package:flutter_gallery_app/injection_container.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -22,30 +23,44 @@ class _PhotoViewState extends State<PhotoView> {
       onRefresh: () => Future.sync(
         () => _photoController.pagingController.refresh(),
       ),
-      child: PagedMasonryGridView<int, Photo>(
-        pagingController: _photoController.pagingController,
-        builderDelegate: PagedChildBuilderDelegate<Photo>(
-          itemBuilder: (context, item, index) => GridTile(
-            child: CachedNetworkImage(
-                imageUrl: item.thumbUrl,
-                errorWidget: (context, url, error) => Container()),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0, left: 8.0),
+        child: PagedMasonryGridView<int, Photo>(
+          pagingController: _photoController.pagingController,
+          builderDelegate: PagedChildBuilderDelegate<Photo>(
+            itemBuilder: (context, item, index) => Padding(
+              padding: const EdgeInsets.only(right: 8.0, bottom: 8.0),
+              child: GestureDetector(
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return PhotoDetailsDialog(imageUrl: item.regularUrl, description: item.description);
+                  },
+                ),
+                child: GridTile(
+                  child: CachedNetworkImage(
+                      imageUrl: item.thumbUrl,
+                      errorWidget: (context, url, error) => Container()),
+                ),
+              ),
+            ),
+            firstPageErrorIndicatorBuilder: (context) => ErrorIndicator(
+              onTryAgain: () =>
+                  _photoController.pagingController.retryLastFailedRequest(),
+            ),
+            newPageProgressIndicatorBuilder: (_) => Container(),
+            newPageErrorIndicatorBuilder: (context) => ErrorIndicator(
+              displayMessage: false,
+              onTryAgain: () =>
+                  _photoController.pagingController.retryLastFailedRequest(),
+            ),
           ),
-          firstPageErrorIndicatorBuilder: (context) => ErrorIndicator(
-            onTryAgain: () =>
-                _photoController.pagingController.retryLastFailedRequest(),
-          ),
-          newPageProgressIndicatorBuilder: (_) => Container(),
-          newPageErrorIndicatorBuilder: (context) => ErrorIndicator(
-            displayMessage: false,
-            onTryAgain: () =>
-                _photoController.pagingController.retryLastFailedRequest(),
-          ),
+          gridDelegateBuilder: (int childCount) {
+            return const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+            );
+          },
         ),
-        gridDelegateBuilder: (int childCount) {
-          return const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-          );
-        },
       ),
     );
   }
