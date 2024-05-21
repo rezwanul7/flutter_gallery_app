@@ -12,10 +12,10 @@ class PhotoRepositoryImpl implements PhotoRepository {
 
   @override
   Future<Either<Failure, List<Photo>>> getPhotos(
-      {required int page, required int perPage}) async {
+      {required int page, required int perPage, String? query}) async {
     try {
-      final List<PhotoModel> photoModels =
-          await remoteDataSource.getPhotos(page: page, perPage: perPage);
+      final List<PhotoModel> photoModels = await remoteDataSource.getPhotos(
+          page: page, perPage: perPage, query: query);
 
       // todo: move the conversion to a mapper class
       final List<Photo> photos = photoModels

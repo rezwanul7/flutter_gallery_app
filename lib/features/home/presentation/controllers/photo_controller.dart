@@ -1,4 +1,6 @@
+import 'package:flutter_gallery_app/core/utils/time_helper.dart';
 import 'package:flutter_gallery_app/features/home/domain/entities/pagination.dart';
+import 'package:flutter_gallery_app/features/home/domain/entities/pagination_filter.dart';
 import 'package:flutter_gallery_app/features/home/domain/entities/photo.dart';
 import 'package:flutter_gallery_app/features/home/domain/usecases/get_photos.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -14,12 +16,15 @@ class PhotoController {
   }
 
   void _fetchPage(int pageKey) async {
-    final result = await getPhotos(Pagination(page: pageKey, perPage: pageSize));
+    var daySegment = TimeHelper.getDaySegment(DateTime.now());
+    final result = await getPhotos(PaginationFilter(
+        pagination: Pagination(page: pageKey, perPage: pageSize),
+        query: daySegment));
     result.fold(
-          (failure) {
+      (failure) {
         pagingController.error = failure.toString();
       },
-          (newPhotos) {
+      (newPhotos) {
         final isLastPage = newPhotos.length < pageSize;
         if (isLastPage) {
           pagingController.appendLastPage(newPhotos);
