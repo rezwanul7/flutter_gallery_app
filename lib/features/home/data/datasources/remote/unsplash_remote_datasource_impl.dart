@@ -15,7 +15,7 @@ class UnsplashRemoteDataSourceImpl implements UnsplashRemoteDataSource {
       {required int page, required int perPage}) async {
     try {
       final response = await dio.get(
-        'https://api.unsplash.com/photos',
+        '/photos',
         queryParameters: {
           'page': page,
           'per_page': perPage,
@@ -35,7 +35,7 @@ class UnsplashRemoteDataSourceImpl implements UnsplashRemoteDataSource {
         throw ServerFailure();
       }
     } catch (error, stackTrace) {
-      logger.e(error.toString(), error: error, stackTrace: stackTrace);
+      // logger.e(error.toString(), error: error, stackTrace: stackTrace);
       throw ServerFailure();
     }
   }

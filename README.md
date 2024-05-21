@@ -15,10 +15,10 @@ appropriate experience whenever they open the app.
 **Responsive UI:** Ensure the UI is responsive and works well on various screen sizes.
 
 ## Todo
-- [ ] Implement Time-Based Display Logic in a helper class.
-- [ ] Integrate with Unsplash API to fetch images based on predefined time segments (morning, afternoon, evening, night)..
+- [x] Implement Time-Based Display Logic in a helper class.
+- [x] Integrate with Unsplash API to fetch images based on predefined time segments (morning, afternoon, evening, night)..
 - [ ] Display the appropriate images for the current time segment in a grid layout with infinite scroll.
-- [ ] Implement a loading indicator while images are being fetched.
+- [x] Implement a loading indicator while images are being fetched.
 - [ ] Provide pull to refresh action to manually refresh the images.
 - [ ] Allow users to tap on a photo to view it in full-screen mode.
 - [ ] Implement a responsive UI that works well on various screen sizes.
