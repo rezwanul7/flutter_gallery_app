@@ -47,8 +47,8 @@ class PhotoDetailsDialog extends StatelessWidget {
                     ),
                     InteractiveViewer(
                       boundaryMargin: const EdgeInsets.all(20),
-                      minScale: 0.1,
-                      maxScale: 1.6,
+                      minScale: 1,
+                      maxScale: 3.6,
                       child: CachedNetworkImage(
                           imageUrl: imageUrl,
                           errorWidget: (context, url, error) => Container()),

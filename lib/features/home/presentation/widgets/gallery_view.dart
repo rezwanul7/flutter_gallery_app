@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_gallery_app/features/home/domain/entities/photo.dart';
 import 'package:flutter_gallery_app/features/home/presentation/controllers/photo_controller.dart';
+import 'package:flutter_gallery_app/core/widgets/grid_view_error_indicator.dart';
 import 'package:flutter_gallery_app/features/home/presentation/widgets/photo_details_dialog.dart';
 import 'package:flutter_gallery_app/injection_container.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-class PhotoView extends StatefulWidget {
-  const PhotoView({super.key});
+class GalleryView extends StatefulWidget {
+  const GalleryView({super.key});
 
   @override
-  State<PhotoView> createState() => _PhotoViewState();
+  State<GalleryView> createState() => _GalleryViewState();
 }
 
-class _PhotoViewState extends State<PhotoView> {
+class _GalleryViewState extends State<GalleryView> {
   final PhotoController _photoController = locator<PhotoController>();
 
   @override
@@ -44,12 +45,12 @@ class _PhotoViewState extends State<PhotoView> {
                 ),
               ),
             ),
-            firstPageErrorIndicatorBuilder: (context) => ErrorIndicator(
+            firstPageErrorIndicatorBuilder: (context) => InfiniteScrollErrorIndicator(
               onTryAgain: () =>
                   _photoController.pagingController.retryLastFailedRequest(),
             ),
             newPageProgressIndicatorBuilder: (_) => Container(),
-            newPageErrorIndicatorBuilder: (context) => ErrorIndicator(
+            newPageErrorIndicatorBuilder: (context) => InfiniteScrollErrorIndicator(
               displayMessage: false,
               onTryAgain: () =>
                   _photoController.pagingController.retryLastFailedRequest(),
@@ -72,34 +73,3 @@ class _PhotoViewState extends State<PhotoView> {
   }
 }
 
-class ErrorIndicator extends StatelessWidget {
-  final VoidCallback onTryAgain;
-  final bool displayMessage;
-
-  const ErrorIndicator(
-      {super.key, required this.onTryAgain, this.displayMessage = true});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Visibility(
-              visible: displayMessage,
-              child: Text(
-                'Something Went Wrong!',
-                style: Theme.of(context).textTheme.titleMedium,
-              )),
-          const SizedBox(height: 8),
-          FilledButton(
-            onPressed: onTryAgain,
-            child: const Text('Retry'),
-          ),
-        ],
-      ),
-    );
-  }
-}
