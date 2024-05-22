@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gallery_app/core/themes/theme.dart';
 import 'package:flutter_gallery_app/features/home/presentation/blocs/theme_cubit.dart';
 import 'package:flutter_gallery_app/features/home/presentation/pages/gallery_page.dart';
-import 'package:flutter_gallery_app/themes/theme.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -16,7 +16,7 @@ class App extends StatelessWidget {
         builder: (context, themeState) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Image Gallery',
+            title: 'Image Gallery App',
             theme: themeState == ThemeState.light
                 ? MaterialTheme(Theme.of(context).textTheme).lightHighContrast()
                 : MaterialTheme(Theme.of(context).textTheme).darkHighContrast(),
